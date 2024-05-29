@@ -11,7 +11,7 @@ export async function GET(
   const id = params.id || "";
   const session = await getAuthSession();
 
-  if (!session?.user) {
+  if (!session) {
     return NextResponse.json(
       { message: "User not authenticated" },
       { status: 401 }
@@ -30,7 +30,7 @@ export async function GET(
     return NextResponse.json({ lead, calls }, { status: 200 });
   } catch (e: any) {
     return NextResponse.json(
-      { message: `Internal Server Err ${e.message}` },
+      { message: `Internal Server Err` },
       { status: 500 }
     );
   }
@@ -42,7 +42,7 @@ export async function DELETE(
 ) {
   const id = params.id || "";
   const session = await getAuthSession();
-  if (!session?.user) {
+  if (!session) {
     return NextResponse.json(
       { message: "User not authenticated" },
       { status: 401 }
@@ -63,7 +63,7 @@ export async function DELETE(
       );
     } catch (e: any) {
       return NextResponse.json(
-        { message: `Internal Server Err ${e.message}` },
+        { message: `Internal Server Err` },
         { status: 500 }
       );
     }
@@ -88,7 +88,7 @@ export async function PUT(
   const id = params.id || "";
   const session = await getAuthSession();
   const body: { status: statusEnum } = await request.json();
-  if (!session?.user) {
+  if (!session) {
     return NextResponse.json(
       { message: "User not authenticated!" },
       { status: 401 }
@@ -120,7 +120,7 @@ export async function PUT(
     } catch (e: any) {
       console.log(e);
       return NextResponse.json(
-        { message: `Internal Server Err ${e.message}` },
+        { message: `Internal Server Err` },
         { status: 500 }
       );
     }

@@ -8,7 +8,7 @@ const dbConnect = async () => {
       dbName: "call",
     });
   } catch (e: any) {
-    throw new Error(`Error connecting to database: ${e.message}`);
+    throw new Error(`Error connecting to database:`);
   }
 };
 

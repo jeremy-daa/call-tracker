@@ -15,7 +15,7 @@ const CallSchema = new Schema(
       required: true,
     },
     callDuration: {
-      type: Number, // Duration of the call in seconds
+      type: String,
       required: true,
     },
     callOutcome: {

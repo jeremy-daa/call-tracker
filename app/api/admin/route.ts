@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         await admin.save();
       } catch (e: any) {
         return NextResponse.json(
-          { message: `Internal Server Err ${e.message}` },
+          { message: `Internal Server Err` },
           { status: 500 }
         );
       }
@@ -72,7 +72,7 @@ export async function PUT(request: Request) {
       }
     } catch (e: any) {
       return NextResponse.json(
-        { message: `Internal Server Err ${e.message}` },
+        { message: `Internal Server Err` },
         { status: 500 }
       );
     }

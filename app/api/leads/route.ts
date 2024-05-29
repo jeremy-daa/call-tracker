@@ -5,16 +5,16 @@ import dbConnect from "@/utils/dbConnect";
 
 export async function POST(request: Request) {
   enum statusEnum {
-    NotCalled = "Not Called",
-    CallScheduled = "Call Scheduled",
-    Calling = "Calling",
-    NoAnswer = "No Answer",
-    LeftVoicemail = "Left Voicemail",
-    CallBackLater = "Call Back Later",
-    Interested = "Interested",
-    NotInterested = "Not Interested",
-    DoNotCall = "Do Not Call",
-    FollowUpRequired = "Follow-up Required",
+    "Not Called",
+    "Call Scheduled",
+    "Calling",
+    "No Answer",
+    "Left Voicemail",
+    "Call Back Later",
+    "Interested",
+    "Not Interested",
+    "Do Not Call",
+    "Follow-up Required",
   }
 
   interface RequestBody {
@@ -26,10 +26,14 @@ export async function POST(request: Request) {
     status: statusEnum;
     notes?: string;
   }
-  const session = await getAuthSession();
   const body: RequestBody = await request.json();
-  if (session) {
-    return NextResponse.redirect("/api/auth/signin");
+  const session = await getAuthSession();
+
+  if (!session) {
+    return NextResponse.json(
+      { message: "User not authenticated" },
+      { status: 401 }
+    );
   } else {
     const { name, email, phone, company, industry, status, notes } = body;
 
@@ -88,10 +92,7 @@ export async function POST(request: Request) {
       }
     } catch (e: any) {
       console.log(e);
-      NextResponse.json(
-        { message: `Internal Server Err ${e.message}` },
-        { status: 500 }
-      );
+      NextResponse.json({ message: `Internal Server Err` }, { status: 500 });
     }
   }
 
@@ -99,23 +100,23 @@ export async function POST(request: Request) {
     { message: "Internal Server Error" },
     { status: 500 }
   );
-  //   List of above http codes with each messages
-  // 400 - Requred fields missing
-  // 400 - Invalid phone number
-  // 400 - Invalid status
-  // 409 - Lead with this phone number already exists
-  // 409 - Lead with this email already exists
-  // 200 - Lead added successfully
-  // 500 - Internal Server Error
 }
 export async function GET(request: Request) {
+  const session = await getAuthSession();
+
+  if (!session) {
+    return NextResponse.json(
+      { message: "User not authenticated" },
+      { status: 401 }
+    );
+  }
   try {
     await dbConnect();
     const leads = await Lead.find();
     return NextResponse.json(leads, { status: 200 });
   } catch (e: any) {
     return NextResponse.json(
-      { message: `Internal Server Err ${e.message}` },
+      { message: `Internal Server Err` },
       { status: 500 }
     );
   }
