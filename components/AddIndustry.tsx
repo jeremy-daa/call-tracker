@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -8,13 +9,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "./ui/use-toast";
-import { FollowUpDate } from "./FolllowUpDate";
-import { CallStatus } from "./CallStatus";
 import axios from "axios";
 
 export function AddIndustry({
@@ -35,7 +33,7 @@ export function AddIndustry({
           <DialogTitle>Add Industry</DialogTitle>
           <DialogDescription>Add a new industry category.</DialogDescription>
         </DialogHeader>
-        <IndustryForm phoneN={phone} setIndustries={setIndustries} />
+        <IndustryForm setIndustries={setIndustries} />
       </DialogContent>
     </Dialog>
   );
@@ -43,30 +41,33 @@ export function AddIndustry({
 
 function IndustryForm({
   className,
-  phoneN,
   setIndustries,
 }: {
   className?: string;
-  phoneN?: string;
   setIndustries: (industries: any[]) => void;
 }) {
   const [industry, setIndustry] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const handleAddIndustry = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     if (!industry) {
+      setLoading(false);
       return toast({ description: "Please enter an industry name" });
     }
     await axios
       .post("/api/industries", { name: industry, description })
       .then((res) => {
         toast({ description: "Industry Added Successfully" });
+        setIndustry("");
+        setLoading(false);
+        setDescription("");
         setIndustries(res.data);
       })
       .catch((err) => {
         toast({ description: err.response.data.message });
-        console.log("Error: ", err);
+        setLoading(false);
       });
   };
   return (
@@ -83,6 +84,7 @@ function IndustryForm({
               setIndustry(e.target.value);
             }}
             value={industry}
+            required
           />
         </div>
         <div className="grid gap-2 w-full">
@@ -102,7 +104,7 @@ function IndustryForm({
         variant={"outline"}
         className="bg-slate-300 text-slate-800"
       >
-        Add Industry
+        {loading ? "Adding Industry..." : "Add Industry"}
       </Button>
     </form>
   );

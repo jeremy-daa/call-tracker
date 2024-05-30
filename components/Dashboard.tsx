@@ -20,15 +20,28 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
   const [openLead, setOpenLead] = useState(false);
   const [openIndustry, setOpenIndustry] = useState(false);
   const [phone, setPhone] = useState("");
+  const [clientLeads, setClientLeads] = useState(leads);
+  const [clientCalls, setClientCalls] = useState(calls);
   const [leadInfo, setLeadInfo] = useState({} as any);
   const [callsInfo, setCallsInfo] = useState([] as any[]);
+  const [filteredLeads, setFilteredLeads] = useState(clientLeads);
   const [callsLoading, setCallsLoading] = useState(false);
-  const [filteredLeads, setFilteredLeads] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [fetching, setFetching] = useState(false);
-  const [industryFilter, setIndustryFilter] = useState("");
   const [industries, setIndustries] = useState<any[]>([]);
+  const [filterTerm, setFilterTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (term: string) => {
+    if (searchTerm === "") {
+      setFilteredLeads(clientLeads);
+    } else {
+      setFilteredLeads(
+        clientLeads.filter((lead) =>
+          lead.phone.toLowerCase().includes(term.toLowerCase())
+        )
+      );
+    }
+  };
+
   useEffect(() => {
     const awaitIndustries = async () => {
       await axios.get("/api/industries").then((res) => {
@@ -52,8 +65,18 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         setOpenCall={setOpenCall}
       />
       <Toaster />
-      <AddLead open={openLead} setOpen={setOpenLead} industries={industries} />
-      <AddCall phone={phone} open={openCall} setOpen={setOpenCall} />
+      <AddLead
+        open={openLead}
+        setOpen={setOpenLead}
+        industries={industries}
+        setClientLeads={setClientLeads}
+      />
+      <AddCall
+        phone={phone}
+        open={openCall}
+        setOpen={setOpenCall}
+        setClientCalls={setClientCalls}
+      />
       <AddIndustry
         open={openIndustry}
         setOpen={setOpenIndustry}
@@ -66,11 +89,11 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         <div className="flex gap-8 flex-wrap">
           <h2 className="font-mono uppercase tracking-wider">
             <span className="text-3xl">Total Leads </span>
-            <span className="text-3xl">: {leads.length}</span>
+            <span className="text-3xl">: {clientLeads.length}</span>
           </h2>
           <h2 className="font-mono uppercase">
             <span className="text-3xl">| Total Calls </span>
-            <span className="text-3xl">: {calls}</span>
+            <span className="text-3xl">: {clientCalls}</span>
           </h2>
         </div>
         <div className="flex justify justify-between w-full gap-10">
@@ -102,6 +125,9 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
           <Button
             variant={"outline"}
             className="px-10 flex gap-4 justify-center items-center hover:bg-slate-900"
+            onClick={() => {
+              setOpenIndustry(true);
+            }}
           >
             <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
               <TbCategoryPlus />
@@ -111,13 +137,15 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
           <div className="relative border-2 border-blue-500 bg-slate-800 text-slate-200 p-2 rounded-lg px-3 pr-4 flex justify-between">
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                handleSearch(e.target.value);
+              }}
               className="max-w-36 bg-slate-800 focus:outline-none text-slate-200 placeholder-slate-200 ml-2 text-sm"
               placeholder="Search Leads"
             />
-            <Badge
-              className="bg-slate-200 text-slate-900 hover:bg-slate-200 cursor-pointer"
-              onClick={() => {}}
-            >
+            <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 cursor-pointer">
               <RiUserSearchFill />
             </Badge>
           </div>
@@ -127,7 +155,9 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         <div className="px-10 mb-6 border-t-[1px] border-b-[1px] py-5 border-slate-300 flex justify-between items-center">
           <Combobox
             industries={industries}
-            setIndustryFilter={setIndustryFilter}
+            setFilteredLeads={setFilteredLeads}
+            clientLeads={clientLeads}
+            setFilterTerm={setFilterTerm}
           />
           {/* <Badge className="cursor-pointer bg-slate-200 text-slate-900 ml-8 hover:bg-slate-300 hover:text-slate-800">
           All
@@ -138,23 +168,34 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
             variant={"outline"}
             className="mx-10 my-4 bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900 text-base px-5 "
           >
-            All Leads
+            {filterTerm === "" ? "All Leads" : filterTerm}
           </Badge>
           <div className="px-4 w-full pb-5 [&:not(:last-child)]:border-b-2 border-b-slate-300 mb-5 ">
             <div className="flex flex-col gap-6 w-full py-4 items-center">
               {/* Lead Card */}
-              {leads.map((lead, index) => (
-                <LeadCard
-                  key={lead._id}
-                  setOpenDrawer={setOpenDrawer}
-                  setOpenCall={setOpenCall}
-                  setPhone={setPhone}
-                  lead={lead}
-                  setLeadInfo={setLeadInfo}
-                  setCallsInfo={setCallsInfo}
-                  setCallsLoading={setCallsLoading}
-                />
-              ))}
+              {
+                // If there are no leads, display a message
+                filteredLeads.length === 0 ? (
+                  <h1 className="text-xl text-slate-200">
+                    No leads found. Clear Filter and Serach or Add a new lead.
+                  </h1>
+                ) : (
+                  <>
+                    {filteredLeads.map((lead) => (
+                      <LeadCard
+                        key={lead._id}
+                        setOpenDrawer={setOpenDrawer}
+                        setOpenCall={setOpenCall}
+                        setPhone={setPhone}
+                        lead={lead}
+                        setLeadInfo={setLeadInfo}
+                        setCallsInfo={setCallsInfo}
+                        setCallsLoading={setCallsLoading}
+                      />
+                    ))}
+                  </>
+                )
+              }
             </div>
           </div>
         </div>

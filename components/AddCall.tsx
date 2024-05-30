@@ -17,15 +17,18 @@ import { StatusSelect } from "./StatusSelect";
 import { toast } from "./ui/use-toast";
 import { FollowUpDate } from "./FolllowUpDate";
 import { CallStatus } from "./CallStatus";
+import axios from "axios";
 
 export function AddCall({
   phone,
   open,
   setOpen,
+  setClientCalls,
 }: {
   phone?: string;
   open: boolean;
   setOpen: (open: boolean) => void;
+  setClientCalls: (calls: number) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -36,7 +39,7 @@ export function AddCall({
             Add a new call to your list of contacts.
           </DialogDescription>
         </DialogHeader>
-        <CallForm phoneN={phone} />
+        <CallForm phoneN={phone} setClientCalls={setClientCalls} />
       </DialogContent>
     </Dialog>
   );
@@ -45,25 +48,69 @@ export function AddCall({
 function CallForm({
   className,
   phoneN,
+  setClientCalls,
 }: {
   className?: string;
   phoneN?: string;
+  setClientCalls: (calls: number) => void;
 }) {
-  const [phone, setPhone] = React.useState("");
+  const [phone, setPhone] = React.useState(phoneN ? phoneN : "");
   const [duration, setDuration] = React.useState("");
   const [outcome, setOutcome] = React.useState("");
   const [followup, setFollowup] = React.useState<Date | undefined>(undefined);
   const [notes, setNotes] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const handleAddCall = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddCall = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    if (!outcome) {
+      setLoading(false);
+      toast({ description: "Please select a call outcome" });
+      return;
+    }
+    const phoneRegex = /^[+]\d{10,15}$/;
+    if (!phoneRegex.test(phone)) {
+      setLoading(false);
+      toast({
+        title: "Invalid phone number",
+        description:
+          "Please enter a valid phone number. It should start with a plus sign (+), followed by country code and 10-15 digits. Example: +1234567890",
+      });
+      return;
+    }
+    const fetchCalls = async () => {
+      await axios.get("/api/calls").then((res) => {
+        setClientCalls(res.data.length);
+      });
+    };
+    await axios
+      .post("/api/calls", {
+        phone,
+        callDuration: duration,
+        callOutcome: outcome,
+        followUpDate: followup,
+        callNotes: notes,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          toast({ description: "Call added successfully" });
+          if (!phoneN) {
+            setPhone("");
+          }
 
-    console.log("phone", phone);
-    console.log("duration", duration);
-    console.log("outcome", outcome);
-    console.log("followup", followup);
-    console.log("notes", notes);
-    toast({ description: "Lead Added Successfully" });
+          setDuration("");
+          setOutcome("");
+          setFollowup(undefined);
+          setNotes("");
+          fetchCalls();
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        toast({ description: e.response.data.message });
+      });
   };
   return (
     <form
@@ -80,6 +127,7 @@ function CallForm({
             }}
             value={phoneN ? phoneN : phone}
             disabled={phoneN === "" ? false : true}
+            required
           />
         </div>
         <div className="grid gap-2 w-full">
@@ -90,6 +138,7 @@ function CallForm({
             onChange={(e) => {
               setDuration(e.target.value);
             }}
+            required
           />
         </div>
       </div>
@@ -119,7 +168,7 @@ function CallForm({
         variant={"outline"}
         className="bg-slate-300 text-slate-800"
       >
-        Add Call
+        {loading ? "Adding Call..." : "Add Call"}
       </Button>
     </form>
   );

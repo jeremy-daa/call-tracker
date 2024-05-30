@@ -34,21 +34,21 @@ export async function POST(request: Request) {
 
     if (!phone || !callOutcome) {
       return NextResponse.json(
-        { error: "Requred fields missing" },
+        { message: "Requred fields missing" },
         { status: 400 }
       );
     }
     const phoneRegex = /^[+]\d{10,15}$/;
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
-        { error: "Invalid phone number" },
+        { message: "Invalid phone number" },
         { status: 400 }
       );
     }
 
     if (!Object.values(statusEnum).includes(callOutcome)) {
       return NextResponse.json(
-        { error: "Invalid call status" },
+        { message: "Invalid call status" },
         { status: 400 }
       );
     }
@@ -65,11 +65,13 @@ export async function POST(request: Request) {
       );
     }
 
-    if (isNaN(new Date(followUpDate).getTime())) {
-      return NextResponse.json(
-        { message: "Invalid follow up date" },
-        { status: 400 }
-      );
+    if (followUpDate) {
+      if (isNaN(followUpDate.getTime())) {
+        return NextResponse.json(
+          { message: "Invalid follow up date" },
+          { status: 400 }
+        );
+      }
     }
 
     const { _id: leadId } = lead;

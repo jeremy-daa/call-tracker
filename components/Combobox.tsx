@@ -20,14 +20,28 @@ import {
 import { CommandList } from "cmdk";
 
 const Combobox = ({
-  setIndustryFilter,
+  setFilteredLeads,
   industries,
+  clientLeads,
+  setFilterTerm,
 }: {
   industries: any[];
-  setIndustryFilter: (value: string) => void;
+  clientLeads: any[];
+  setFilteredLeads: (leads: any[]) => void;
+  setFilterTerm: (term: string) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
+
+  const handleFilter = (industry: string) => {
+    if (industry === "") {
+      setFilteredLeads(clientLeads);
+    } else {
+      setFilteredLeads(
+        clientLeads.filter((lead) => lead.industry === industry)
+      );
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -55,10 +69,9 @@ const Combobox = ({
                   key={index}
                   value={industry.name}
                   onSelect={(currentValue) => {
-                    setValue(currentValue);
-                    setIndustryFilter(
-                      currentValue === value ? "" : currentValue
-                    );
+                    setValue(currentValue === value ? "" : currentValue);
+                    handleFilter(currentValue === value ? "" : currentValue);
+                    setFilterTerm(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
                   className="hover:bg-slate-700"

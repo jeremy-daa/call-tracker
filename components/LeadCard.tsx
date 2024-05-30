@@ -50,12 +50,12 @@ const LeadCard = ({
         toast({
           variant: "success",
           title: "Updated",
-          description: "Lead status spdated successfully",
+          description: "Lead status updated successfully",
         });
         axios
           .get(`/api/leads/${leadId}`)
           .then((res) => {
-            setSelectedLead(res.data);
+            setSelectedLead(res.data.lead);
           })
           .catch((err) => {
             console.log("Error: ", err);
@@ -82,7 +82,7 @@ const LeadCard = ({
           height="45"
           className="w-auto h-[35px] object-contain mr-5"
         />
-        <div className="min-w-44 flex flex-col items-start">
+        <div className="min-w-[200px] max-w-[200px] flex flex-col items-start">
           <h2 className="text-xl">{selectedLead.fullName}</h2>
           <p className="text-sm">{selectedLead.company}</p>
           <div className="mt-4 flex items-center justify-center gap-3">
@@ -98,7 +98,7 @@ const LeadCard = ({
             </span>{" "}
           </div>
         </div>
-        <div className="ml-10 flex gap-3 self-start">
+        <div className="ml-10 flex gap-3 self-center">
           <SelectLeadStatus status={status} setStatus={setStatus} />
           {/* if select value changes display update button */}
           {status && (

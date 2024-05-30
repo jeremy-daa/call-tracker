@@ -21,10 +21,12 @@ export function AddLead({
   open,
   setOpen,
   industries,
+  setClientLeads,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   industries: any[];
+  setClientLeads: (value: any[]) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -35,7 +37,7 @@ export function AddLead({
             Add a new lead to your list of contacts.
           </DialogDescription>
         </DialogHeader>
-        <ProfileForm industries={industries} />
+        <ProfileForm industries={industries} setClientLeads={setClientLeads} />
       </DialogContent>
     </Dialog>
   );
@@ -44,9 +46,11 @@ export function AddLead({
 function ProfileForm({
   className,
   industries,
+  setClientLeads,
 }: {
   className?: string;
   industries: any[];
+  setClientLeads: (value: any[]) => void;
 }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -69,6 +73,11 @@ function ProfileForm({
           "Please enter a valid phone number. It should start with a plus sign (+), followed by country code and 10-15 digits. Example: +1234567890",
       });
     }
+    const fetchLeads = async () => {
+      await axios.get("/api/leads").then((res) => {
+        setClientLeads(res.data);
+      });
+    };
 
     await axios
       .post("/api/leads", {
@@ -89,6 +98,8 @@ function ProfileForm({
         setStatus("");
         setNotes("");
         setLoading(false);
+        fetchLeads();
+
         toast({ description: "Lead added successfully" });
       })
       .catch((err) => {
@@ -170,7 +181,7 @@ function ProfileForm({
         variant={"outline"}
         className="bg-slate-300 text-slate-800"
       >
-        {loading ? "Adding ..." : "Add Lead"}
+        {loading ? "Adding Lead..." : "Add Lead"}
       </Button>
     </form>
   );
