@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    // CHeck if industry already exists
+    // Check if industry already exists
     const industryExists = await Industry.findOne({ name });
 
     if (industryExists) {
@@ -39,10 +39,9 @@ export async function POST(request: Request) {
       });
       const res = await newIndustry.save();
       if (res) {
-        return NextResponse.json(
-          { message: "Industry added successfully" },
-          { status: 200 }
-        );
+        const industries = await Industry.find();
+
+        return NextResponse.json(industries, { status: 200 });
       }
     } catch (e: any) {
       console.log(e);
@@ -59,7 +58,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const session = await getAuthSession();
 
-  if (session) {
+  if (!session) {
     return NextResponse.json(
       { message: "User not authenticated" },
       { status: 401 }

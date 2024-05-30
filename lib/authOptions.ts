@@ -22,19 +22,13 @@ export const authOptions: NextAuthOptions = {
 
         if (res.ok && data.admin) {
           const admin = data.admin;
-          const user = { id: admin.id };
+          const user = { id: admin.id, exists: true };
           return user;
         }
         return null;
       },
     }),
   ],
-  callbacks: {
-    session: async ({ session, user }) => {
-      session.user.id = user.id;
-      return Promise.resolve(session);
-    },
-  },
 };
 
 export const getAuthSession = () => getServerSession(authOptions);

@@ -42,3 +42,18 @@ export {
   hashPassword,
   createRandomString,
 };
+
+export function getStatusColor(status: string) {
+  const statusColors: { [key: string]: string } = {
+    "Not Called": "bg-slate-400 hover:bg-slate-400",
+    "Call Scheduled": "bg-slate-300 hover:bg-slate-300",
+    Calling: "bg-slate-100 hover:bg-slate-100",
+    "No Answer": "bg-red-200 hover:bg-red-200",
+    "Left Voicemail": "bg-red-300 hover:bg-red-300",
+    "Call Back Later": "bg-yellow-400 hover:bg-yellow-400",
+    Interested: "bg-green-400 hover:bg-green-400",
+    "Not Interested": "bg-pink-400 hover:bg-pink-400",
+    "Do Not Call": "bg-pink-600 hover:bg-pink-600",
+  };
+  return statusColors[status] || "bg-default"; // Return "bg-default" if status is not found
+}

@@ -15,15 +15,18 @@ import { Label } from "@/components/ui/label";
 import { toast } from "./ui/use-toast";
 import { FollowUpDate } from "./FolllowUpDate";
 import { CallStatus } from "./CallStatus";
+import axios from "axios";
 
 export function AddIndustry({
   phone,
   open,
   setOpen,
+  setIndustries,
 }: {
   phone?: string;
   open: boolean;
   setOpen: (open: boolean) => void;
+  setIndustries: (industries: any[]) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,7 +35,7 @@ export function AddIndustry({
           <DialogTitle>Add Industry</DialogTitle>
           <DialogDescription>Add a new industry category.</DialogDescription>
         </DialogHeader>
-        <IndustryForm phoneN={phone} />
+        <IndustryForm phoneN={phone} setIndustries={setIndustries} />
       </DialogContent>
     </Dialog>
   );
@@ -41,16 +44,30 @@ export function AddIndustry({
 function IndustryForm({
   className,
   phoneN,
+  setIndustries,
 }: {
   className?: string;
   phoneN?: string;
+  setIndustries: (industries: any[]) => void;
 }) {
   const [industry, setIndustry] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const handleAddIndustry = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddIndustry = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    toast({ description: "Lead Added Successfully" });
+    if (!industry) {
+      return toast({ description: "Please enter an industry name" });
+    }
+    await axios
+      .post("/api/industries", { name: industry, description })
+      .then((res) => {
+        toast({ description: "Industry Added Successfully" });
+        setIndustries(res.data);
+      })
+      .catch((err) => {
+        toast({ description: err.response.data.message });
+        console.log("Error: ", err);
+      });
   };
   return (
     <form

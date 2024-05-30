@@ -19,38 +19,13 @@ import {
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
 
-const industries = [
-  {
-    value: "law",
-    label: "Law Firm",
-  },
-  {
-    value: "tourism",
-    label: "Tour & Travel",
-  },
-  {
-    value: "finance",
-    label: "Finance",
-  },
-  {
-    value: "health",
-    label: "Healthcare",
-  },
-  {
-    value: "edu",
-    label: "Education",
-  },
-  {
-    value: "media",
-    label: "Media",
-  },
-  {
-    value: "other",
-    label: "Other",
-  },
-];
-
-const Combobox = () => {
+const Combobox = ({
+  setIndustryFilter,
+  industries,
+}: {
+  industries: any[];
+  setIndustryFilter: (value: string) => void;
+}) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -61,10 +36,10 @@ const Combobox = () => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between hover:bg-slate-700"
+          className="w-[200px] justify-between text-slate-400 hover:bg-slate-700"
         >
           {value
-            ? industries.find((industry) => industry.value === value)?.label
+            ? industries.find((industry) => industry.name === value)?.name
             : "Filter by industry..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -75,12 +50,15 @@ const Combobox = () => {
             <CommandInput placeholder="Search industry..." />
             <CommandEmpty>No industry found.</CommandEmpty>
             <CommandGroup>
-              {industries.map((industry) => (
+              {industries.map((industry, index) => (
                 <CommandItem
-                  key={industry.value}
-                  value={industry.value}
+                  key={index}
+                  value={industry.name}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    setValue(currentValue);
+                    setIndustryFilter(
+                      currentValue === value ? "" : currentValue
+                    );
                     setOpen(false);
                   }}
                   className="hover:bg-slate-700"
@@ -88,10 +66,10 @@ const Combobox = () => {
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === industry.value ? "opacity-100" : "opacity-0"
+                      value === industry.name ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {industry.label}
+                  {industry.name}
                 </CommandItem>
               ))}
             </CommandGroup>

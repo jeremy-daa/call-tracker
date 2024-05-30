@@ -10,23 +10,18 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "./ui/badge";
 
-export function SelectDemo({
+export function SelectLeadStatus({
   status,
   setStatus,
-  setLeadId,
-  leadId,
 }: {
   status: string;
-  leadId: string;
   setStatus: (status: any) => void;
-  setLeadId: (leadId: any) => void;
 }) {
   return (
     <Select
       value={status}
       onValueChange={(value) => {
         setStatus(value);
-        setLeadId(leadId);
       }}
     >
       <SelectTrigger className="w-[180px]">

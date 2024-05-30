@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Image from "next/image";
 import { TableDemo } from "@/components/Table";
@@ -11,12 +12,12 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Badge } from "./ui/badge";
 import { MdEmail, MdPhone, MdNotes } from "react-icons/md";
 import { HiMiniBuildingOffice2 } from "react-icons/hi2";
-import { on } from "events";
+import axios from "axios";
+import Link from "next/link";
 
 interface drawerProps {
   open: boolean;
@@ -24,7 +25,29 @@ interface drawerProps {
   data?: any;
 }
 
-export function DrawerDemo({ open, onOpenChange }: drawerProps) {
+export function DrawerDemo({
+  open,
+  onOpenChange,
+  leadInfo,
+  setLeadInfo,
+  callsInfo,
+  setCallsInfo,
+  callsLoading,
+  setPhone,
+  setOpenCall,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  leadInfo: any;
+  setLeadInfo: (value: any) => void;
+  callsInfo: any[];
+  setCallsInfo: (value: any) => void;
+  callsLoading: boolean;
+  setPhone: (value: string) => void;
+  setOpenCall: (value: boolean) => void;
+}) {
+  const lead = leadInfo;
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-slate-800 rounded-none">
@@ -40,35 +63,35 @@ export function DrawerDemo({ open, onOpenChange }: drawerProps) {
                   className="w-[35px] h-[35px] object-contain"
                 />
               </div>
-              <DrawerTitle>Lead Name</DrawerTitle>
-              <DrawerDescription>Company Name</DrawerDescription>
+              <DrawerTitle>{lead?.fullName}</DrawerTitle>
+              <DrawerDescription>{lead?.company}</DrawerDescription>
             </DrawerHeader>
             <div className="px-4 py-5">
-              <div className="flex flex-col gap-5 mb-2">
+              <div className="flex flex-col gap-5 mb-2 select-text">
                 {/* Display Info About lead*/}
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
                     <MdPhone className="mr-2" /> Phone Number:
                   </Badge>
-                  <span>+251-991-165512</span>
+                  <Link href={`tel:${lead.phone}`}>{lead.phone}</Link>
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
                     <MdEmail className="mr-2" /> Email:
                   </Badge>
-                  <span>abc@gmail.com</span>
+                  <Link href={`mailto:${lead.email}`}>{lead?.email}</Link>
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
                     <HiMiniBuildingOffice2 className="mr-2" /> Industry:
                   </Badge>
-                  <span>Law Firm</span>
+                  <span>{lead?.industry}</span>
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
                     <MdNotes className="mr-2" /> Notes:
                   </Badge>
-                  <span>Note likely to convert</span>
+                  <span>{lead?.notes}</span>
                 </div>
               </div>
             </div>
@@ -76,16 +99,28 @@ export function DrawerDemo({ open, onOpenChange }: drawerProps) {
               <Button
                 className="bg-slate-700 hover:bg-slate-600"
                 variant={"outline"}
+                onClick={() => {
+                  setOpenCall(true);
+                  setPhone(lead.phone);
+                }}
               >
                 Add Call
               </Button>
               <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setLeadInfo({});
+                    setCallsInfo([]);
+                  }}
+                >
+                  Close
+                </Button>
               </DrawerClose>
             </DrawerFooter>
           </div>
           <div className="flex-[0.6] pt-4 mt-8 flex flex-col justify-between">
-            <TableDemo />
+            <TableDemo calls={callsInfo} callsLoading={callsLoading} />
           </div>
         </div>
       </DrawerContent>

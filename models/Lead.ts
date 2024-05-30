@@ -24,7 +24,7 @@ const LeadSchema = new Schema(
     company: {
       type: String,
       required: true,
-      unique: true,
+      default: "No Company Name",
       trim: true,
     },
     industry: {

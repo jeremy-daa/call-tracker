@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/authOptions";
 import Lead from "@/models/Lead";
 import dbConnect from "@/utils/dbConnect";
+import { headers } from "next/headers";
 
 export async function POST(request: Request) {
   enum statusEnum {
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     const leadPhoneExists = await Lead.findOne({ phone });
     if (leadPhoneExists) {
       return NextResponse.json(
-        { error: "Lead with this phone number already exists" },
+        { message: "Lead with this phone number already exists" },
         { status: 409 }
       );
     }
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
     const leadEmailExists = await Lead.findOne({ email });
     if (leadEmailExists) {
       return NextResponse.json(
-        { error: "Lead with this email already exists" },
+        { message: "Lead with this email already exists" },
         { status: 409 }
       );
     }
@@ -103,7 +104,18 @@ export async function POST(request: Request) {
 }
 export async function GET(request: Request) {
   const session = await getAuthSession();
+  const headersList = headers();
+  const referer = headersList.get("key");
 
+  if (referer === process.env.NEXTAUTH_SECRET) {
+    try {
+      await dbConnect();
+      const leads = await Lead.find();
+      return NextResponse.json(leads, { status: 200 });
+    } catch (e: any) {
+      return NextResponse.json({ message: `Invalid key` }, { status: 500 });
+    }
+  }
   if (!session) {
     return NextResponse.json(
       { message: "User not authenticated" },

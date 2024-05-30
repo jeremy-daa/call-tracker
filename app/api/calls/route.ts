@@ -108,3 +108,26 @@ export async function POST(request: Request) {
     { status: 500 }
   );
 }
+
+export async function GET(request: Request) {
+  const session = await getAuthSession();
+
+  if (!session) {
+    return NextResponse.json(
+      { message: "User not authenticated" },
+      { status: 401 }
+    );
+  } else {
+    try {
+      await dbConnect();
+      const calls = await Call.find();
+
+      return NextResponse.json({ calls }, { status: 200 });
+    } catch (e: any) {
+      return NextResponse.json(
+        { message: `Internal Server Err` },
+        { status: 500 }
+      );
+    }
+  }
+}
