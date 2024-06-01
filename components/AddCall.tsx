@@ -98,7 +98,6 @@ function CallForm({
           if (!phoneN) {
             setPhone("");
           }
-
           setDuration("");
           setOutcome("");
           setFollowup(undefined);

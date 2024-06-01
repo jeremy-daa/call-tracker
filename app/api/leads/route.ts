@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/authOptions";
 import Lead from "@/models/Lead";
 import dbConnect from "@/utils/dbConnect";
 import { headers } from "next/headers";
+import Call from "@/models/Call";
 
 export async function POST(request: Request) {
   enum statusEnum {
@@ -92,7 +93,6 @@ export async function POST(request: Request) {
         );
       }
     } catch (e: any) {
-      console.log(e);
       NextResponse.json({ message: `Internal Server Err` }, { status: 500 });
     }
   }
@@ -111,6 +111,18 @@ export async function GET(request: Request) {
     try {
       await dbConnect();
       const leads = await Lead.find();
+      const calls = await Call.find();
+      leads.forEach((lead) => {
+        const latestCall = calls
+          .filter((call) => call.lead.toString() === lead._id.toString())
+          .sort((a, b) => b.date - a.date)[0];
+        if (!latestCall) {
+          lead.followUpDate = null;
+          return;
+        }
+        lead.followUpDate = latestCall?.followUpDate;
+      });
+
       return NextResponse.json(leads, { status: 200 });
     } catch (e: any) {
       return NextResponse.json({ message: `Invalid key` }, { status: 500 });

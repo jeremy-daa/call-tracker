@@ -63,6 +63,8 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         callsLoading={callsLoading}
         setPhone={setPhone}
         setOpenCall={setOpenCall}
+        setFilteredLeads={setFilteredLeads}
+        filteredLeads={filteredLeads}
       />
       <Toaster />
       <AddLead
@@ -191,6 +193,8 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
                         setLeadInfo={setLeadInfo}
                         setCallsInfo={setCallsInfo}
                         setCallsLoading={setCallsLoading}
+                        setFilteredLeads={setFilteredLeads}
+                        filteredLeads={filteredLeads}
                       />
                     ))}
                   </>

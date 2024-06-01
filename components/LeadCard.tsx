@@ -9,6 +9,7 @@ import { SelectLeadStatus } from "./Select";
 import Image from "next/image";
 import { getStatusColor } from "@/utils/functions";
 import axios from "axios";
+import { DeleteDialogue } from "./DeleteDialogue";
 
 const LeadCard = ({
   setOpenDrawer,
@@ -18,6 +19,8 @@ const LeadCard = ({
   setLeadInfo,
   setCallsInfo,
   setCallsLoading,
+  setFilteredLeads,
+  filteredLeads,
 }: {
   setOpenDrawer: (value: boolean) => void;
   setOpenCall: (value: boolean) => void;
@@ -26,6 +29,8 @@ const LeadCard = ({
   setLeadInfo: (value: any) => void;
   setCallsInfo: (value: any) => void;
   setCallsLoading: (value: boolean) => void;
+  setFilteredLeads: (value: any[]) => void;
+  filteredLeads: any[];
 }) => {
   const [status, setStatus] = React.useState("");
   const [selectedLead, setSelectedLead] = React.useState(lead);
@@ -98,29 +103,37 @@ const LeadCard = ({
             </span>{" "}
           </div>
         </div>
-        <div className="ml-10 flex gap-3 self-center">
-          <SelectLeadStatus status={status} setStatus={setStatus} />
-          {/* if select value changes display update button */}
-          {status && (
-            <>
-              <Button
-                variant={"outline"}
-                className="px-10 flex gap-4 justify-center items-center hover:bg-slate-900"
-                onClick={() => handleStatusUpdate(status, selectedLead._id)}
-              >
-                Update
-              </Button>
-              <Button
-                variant={"outline"}
-                className="px-10 flex gap-4 justify-center items-center hover:bg-slate-900"
-                onClick={() => {
-                  setStatus("");
-                }}
-              >
-                Cancel
-              </Button>
-            </>
-          )}
+        <div className="ml-10 flex flex-col gap-3 self-center">
+          <div className="flex gap-3">
+            <SelectLeadStatus status={status} setStatus={setStatus} />
+            {/* if select value changes display update button */}
+            {status && (
+              <>
+                <Button
+                  variant={"outline"}
+                  className="px-10 flex gap-4 justify-center items-center hover:bg-slate-900"
+                  onClick={() => handleStatusUpdate(status, selectedLead._id)}
+                >
+                  Update
+                </Button>
+                <Button
+                  variant={"outline"}
+                  className="px-10 flex gap-4 justify-center items-center hover:bg-slate-900"
+                  onClick={() => {
+                    setStatus("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </div>
+          <DeleteDialogue
+            leadId={selectedLead._id}
+            name={selectedLead.fullName}
+            setFilteredLeads={setFilteredLeads}
+            filteredLeads={filteredLeads}
+          />
         </div>
       </div>
       <div className="flex gap-4 flex-col">

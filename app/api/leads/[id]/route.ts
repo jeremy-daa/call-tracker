@@ -27,8 +27,21 @@ export async function GET(
     const calls = await Call.find({
       lead: id,
     });
+
+    // From the lead object, get the latest call object with matching lead id and set lead.followUpDate to latest call.followUpDate
+    const latestCall = calls
+      .filter((call) => call.lead.toString() === lead._id.toString())
+      .sort((a, b) => b.date - a.date)[0];
+
+    if (!latestCall) {
+      lead.followUpDate = null;
+    } else {
+      lead.followUpDate = latestCall?.followUpDate;
+    }
+
     return NextResponse.json({ lead, calls }, { status: 200 });
   } catch (e: any) {
+    console.log(e.message);
     return NextResponse.json(
       { message: `Internal Server Err` },
       { status: 500 }
@@ -112,6 +125,48 @@ export async function PUT(
       }
 
       await Lead.findByIdAndUpdate(id, { status });
+
+      return NextResponse.json(
+        { message: "Lead updated successfully" },
+        { status: 200 }
+      );
+    } catch (e: any) {
+      console.log(e);
+      return NextResponse.json(
+        { message: `Internal Server Err` },
+        { status: 500 }
+      );
+    }
+  }
+}
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id || "";
+  const session = await getAuthSession();
+  const body = await request.json();
+  if (!session) {
+    return NextResponse.json(
+      { message: "User not authenticated!" },
+      { status: 401 }
+    );
+  } else {
+    const { notes } = body;
+    try {
+      await dbConnect();
+      console.log(notes);
+
+      const leadExists = await Lead.findById(id);
+
+      if (!leadExists) {
+        return NextResponse.json(
+          { message: "Lead not found" },
+          { status: 404 }
+        );
+      }
+
+      await Lead.findByIdAndUpdate(id, { notes });
 
       return NextResponse.json(
         { message: "Lead updated successfully" },
