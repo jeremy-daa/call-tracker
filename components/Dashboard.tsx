@@ -21,7 +21,6 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
   const [openIndustry, setOpenIndustry] = useState(false);
   const [phone, setPhone] = useState("");
   const [clientLeads, setClientLeads] = useState(leads);
-  const [clientCalls, setClientCalls] = useState(calls);
   const [leadInfo, setLeadInfo] = useState({} as any);
   const [callsInfo, setCallsInfo] = useState([] as any[]);
   const [filteredLeads, setFilteredLeads] = useState(clientLeads);
@@ -29,6 +28,8 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
   const [industries, setIndustries] = useState<any[]>([]);
   const [filterTerm, setFilterTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [totalCalls, setTotalCalls] = useState(calls || 0);
+  const [totalLeads, setTotalLeads] = useState(leads.length);
 
   const handleSearch = (term: string) => {
     if (searchTerm === "") {
@@ -65,6 +66,8 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         setOpenCall={setOpenCall}
         setFilteredLeads={setFilteredLeads}
         filteredLeads={filteredLeads}
+        clientLeads={clientLeads}
+        setClientLeads={setClientLeads}
       />
       <Toaster />
       <AddLead
@@ -72,12 +75,17 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         setOpen={setOpenLead}
         industries={industries}
         setClientLeads={setClientLeads}
+        setTotalLeads={setTotalLeads}
+        totalLeads={totalLeads}
+        setFilteredLeads={setFilteredLeads}
+        filterTerm={filterTerm}
       />
       <AddCall
         phone={phone}
         open={openCall}
         setOpen={setOpenCall}
-        setClientCalls={setClientCalls}
+        setTotalCalls={setTotalCalls}
+        totalCalls={totalCalls}
       />
       <AddIndustry
         open={openIndustry}
@@ -95,7 +103,7 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
           </h2>
           <h2 className="font-mono uppercase">
             <span className="text-3xl">| Total Calls </span>
-            <span className="text-3xl">: {clientCalls}</span>
+            <span className="text-3xl">: {totalCalls}</span>
           </h2>
         </div>
         <div className="flex justify justify-between w-full gap-10">
@@ -136,6 +144,7 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
             </Badge>
             Add Industry
           </Button>
+
           <div className="relative border-2 border-blue-500 bg-slate-800 text-slate-200 p-2 rounded-lg px-3 pr-4 flex justify-between">
             <input
               type="text"
@@ -161,6 +170,8 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
             clientLeads={clientLeads}
             setFilterTerm={setFilterTerm}
           />
+          {/* <FollowupDrawer filteredLeads={filteredLeads} /> */}
+
           {/* <Badge className="cursor-pointer bg-slate-200 text-slate-900 ml-8 hover:bg-slate-300 hover:text-slate-800">
           All
         </Badge> */}
@@ -195,6 +206,12 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
                         setCallsLoading={setCallsLoading}
                         setFilteredLeads={setFilteredLeads}
                         filteredLeads={filteredLeads}
+                        clientLeads={clientLeads}
+                        setClientLeads={setClientLeads}
+                        setTotalCalls={setTotalLeads}
+                        totalCalls={totalLeads}
+                        totalLeads={totalLeads}
+                        setTotalLeads={setTotalLeads}
                       />
                     ))}
                   </>

@@ -22,11 +22,19 @@ export function AddLead({
   setOpen,
   industries,
   setClientLeads,
+  setTotalLeads,
+  totalLeads,
+  setFilteredLeads,
+  filterTerm,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   industries: any[];
   setClientLeads: (value: any[]) => void;
+  setTotalLeads: (value: number) => void;
+  totalLeads: number;
+  setFilteredLeads: (leads: any[]) => void;
+  filterTerm: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -37,7 +45,14 @@ export function AddLead({
             Add a new lead to your list of contacts.
           </DialogDescription>
         </DialogHeader>
-        <ProfileForm industries={industries} setClientLeads={setClientLeads} />
+        <ProfileForm
+          industries={industries}
+          setClientLeads={setClientLeads}
+          setTotalLeads={setTotalLeads}
+          totalLeads={totalLeads}
+          setFilteredLeads={setFilteredLeads}
+          filterTerm={filterTerm}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -47,10 +62,18 @@ function ProfileForm({
   className,
   industries,
   setClientLeads,
+  setTotalLeads,
+  totalLeads,
+  setFilteredLeads,
+  filterTerm,
 }: {
   className?: string;
   industries: any[];
   setClientLeads: (value: any[]) => void;
+  setTotalLeads: (value: number) => void;
+  totalLeads: number;
+  setFilteredLeads: (leads: any[]) => void;
+  filterTerm: string;
 }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -76,6 +99,7 @@ function ProfileForm({
     const fetchLeads = async () => {
       await axios.get("/api/leads").then((res) => {
         setClientLeads(res.data);
+        setTotalLeads(totalLeads + 1);
       });
     };
 
@@ -99,7 +123,16 @@ function ProfileForm({
         setNotes("");
         setLoading(false);
         fetchLeads();
-
+        setClientLeads(res.data);
+        const newfilteredLeads = res.data.filter((lead: any) => {
+          if (filterTerm === "") {
+            return lead;
+          }
+          if (lead.industry === filterTerm) {
+            return lead;
+          }
+        });
+        setFilteredLeads(newfilteredLeads);
         toast({ description: "Lead added successfully" });
       })
       .catch((err) => {

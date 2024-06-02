@@ -18,11 +18,23 @@ export function DeleteDialogue({
   name,
   setFilteredLeads,
   filteredLeads,
+  clientLeads,
+  setClientLeads,
+  totalCalls,
+  totalLeads,
+  setTotalLeads,
+  setTotalCalls,
 }: {
   leadId: string;
   name: string;
   setFilteredLeads: (leads: any[]) => void;
   filteredLeads: any[];
+  clientLeads: any[];
+  setClientLeads: (leads: any[]) => void;
+  totalCalls: number;
+  totalLeads: number;
+  setTotalLeads: (value: number) => void;
+  setTotalCalls: (value: number) => void;
 }) {
   const handleLeadDelete = () => {
     axios
@@ -34,9 +46,16 @@ export function DeleteDialogue({
           description: "Lead deleted successfully",
         });
         setFilteredLeads(filteredLeads.filter((lead) => lead._id !== leadId));
+        setClientLeads(clientLeads.filter((lead) => lead._id !== leadId));
+        setTotalLeads(totalLeads - 1);
+        setTotalCalls(res.data.totalCalls);
+        console.log(res.data.totalCalls);
       })
       .catch((err) => {
-        console.log("Error: ", err);
+        toast({
+          title: "Error",
+          description: err.response.data.message,
+        });
       });
   };
   return (

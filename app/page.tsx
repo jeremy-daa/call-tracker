@@ -25,7 +25,7 @@ export default async function Home() {
   });
 
   return (
-    <main className="min-h-[200vh] py-8 sm:px-24 md:px-16 px-12 ">
+    <main className="min-h-[200vh] py-8 sm:px-24 md:px-16 px-12 mb-16">
       <div className="w-full h-auto sticky top-0 py-5 flex justify-between bg-slate-950 z-30">
         <Link
           href={"/"}
@@ -47,7 +47,6 @@ export default async function Home() {
       <h1 className="text-center md:text-5xl tracking-wide mt-16 capitalize text-3xl">
         Welcome Back!
       </h1>
-
       <Dashboard leads={leads} calls={calls.length} />
     </main>
   );

@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { IndustrySelect } from "./IndustrySelect";
 import { StatusSelect } from "./StatusSelect";
 import { toast } from "./ui/use-toast";
-import { FollowUpDate } from "./FolllowUpDate";
+import { FollowUpDate } from "./FollowUpDate";
 import { CallStatus } from "./CallStatus";
 import axios from "axios";
 
@@ -23,12 +23,14 @@ export function AddCall({
   phone,
   open,
   setOpen,
-  setClientCalls,
+  totalCalls,
+  setTotalCalls,
 }: {
   phone?: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-  setClientCalls: (calls: number) => void;
+  totalCalls: number;
+  setTotalCalls: (calls: number) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -39,7 +41,11 @@ export function AddCall({
             Add a new call to your list of contacts.
           </DialogDescription>
         </DialogHeader>
-        <CallForm phoneN={phone} setClientCalls={setClientCalls} />
+        <CallForm
+          phoneN={phone}
+          totalCalls={totalCalls}
+          setTotalCalls={setTotalCalls}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -48,11 +54,13 @@ export function AddCall({
 function CallForm({
   className,
   phoneN,
-  setClientCalls,
+  totalCalls,
+  setTotalCalls,
 }: {
   className?: string;
   phoneN?: string;
-  setClientCalls: (calls: number) => void;
+  totalCalls: number;
+  setTotalCalls: (calls: number) => void;
 }) {
   const [phone, setPhone] = React.useState(phoneN ? phoneN : "");
   const [duration, setDuration] = React.useState("");
@@ -81,7 +89,7 @@ function CallForm({
     }
     const fetchCalls = async () => {
       await axios.get("/api/calls").then((res) => {
-        setClientCalls(res.data.length);
+        setTotalCalls(totalCalls + 1);
       });
     };
     await axios
@@ -104,6 +112,7 @@ function CallForm({
           setNotes("");
           fetchCalls();
           setLoading(false);
+          setTotalCalls(res.data.totalCalls);
         }
       })
       .catch((e) => {

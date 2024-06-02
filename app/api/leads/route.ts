@@ -87,10 +87,8 @@ export async function POST(request: Request) {
       });
       const res = await newLead.save();
       if (res) {
-        return NextResponse.json(
-          { message: "Lead added successfully" },
-          { status: 200 }
-        );
+        const leads = await Lead.find();
+        return NextResponse.json(leads, { status: 200 });
       }
     } catch (e: any) {
       NextResponse.json({ message: `Internal Server Err` }, { status: 500 });

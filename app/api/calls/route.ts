@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
   interface RequestBody {
     phone: string;
-    callDuration: number;
+    callDuration: string;
     callOutcome: statusEnum;
     followUpDate: Date;
     callNotes: string;
@@ -38,6 +38,14 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    const test = parseInt(callDuration);
+    if (Number.isNaN(test)) {
+      return NextResponse.json(
+        { message: "Invalid call duration" },
+        { status: 400 }
+      );
+    }
+
     const phoneRegex = /^[+]\d{10,15}$/;
     if (!phoneRegex.test(phone)) {
       return NextResponse.json(
@@ -66,7 +74,8 @@ export async function POST(request: Request) {
     }
 
     if (followUpDate) {
-      if (isNaN(followUpDate.getTime())) {
+      const date = new Date(followUpDate);
+      if (isNaN(date.getTime())) {
         return NextResponse.json(
           { message: "Invalid follow up date" },
           { status: 400 }
@@ -79,13 +88,6 @@ export async function POST(request: Request) {
     try {
       await dbConnect();
       const newCall = new Call({
-        // fullName: name || "No Name",
-        // email: email || "No Email",
-        // phone,
-        // company: company || "No Company",
-        // industry,
-        // status,
-        // notes: notes || "No Notes",
         lead: leadId,
         callDuration,
         callOutcome,
@@ -94,13 +96,15 @@ export async function POST(request: Request) {
       });
       const res = await newCall.save();
       if (res) {
+        const calls = await Call.find();
+        const totalCalls = calls.length;
+
         return NextResponse.json(
-          { message: "Call added successfully" },
+          { message: "Call added successfully", totalCalls },
           { status: 200 }
         );
       }
     } catch (e: any) {
-      console.log(e);
       NextResponse.json({ message: `Internal Server Err` }, { status: 500 });
     }
   }

@@ -21,6 +21,12 @@ const LeadCard = ({
   setCallsLoading,
   setFilteredLeads,
   filteredLeads,
+  clientLeads,
+  setClientLeads,
+  totalCalls,
+  totalLeads,
+  setTotalCalls,
+  setTotalLeads,
 }: {
   setOpenDrawer: (value: boolean) => void;
   setOpenCall: (value: boolean) => void;
@@ -31,6 +37,12 @@ const LeadCard = ({
   setCallsLoading: (value: boolean) => void;
   setFilteredLeads: (value: any[]) => void;
   filteredLeads: any[];
+  clientLeads: any[];
+  setClientLeads: (value: any[]) => void;
+  totalCalls: number;
+  totalLeads: number;
+  setTotalCalls: (value: number) => void;
+  setTotalLeads: (value: number) => void;
 }) => {
   const [status, setStatus] = React.useState("");
   const [selectedLead, setSelectedLead] = React.useState(lead);
@@ -46,6 +58,15 @@ const LeadCard = ({
       .catch((err) => {
         console.log("Error: ", err);
       });
+  };
+
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return "No follow-up date";
+    const d = new Date(date);
+    // Month in text, day + "th", year
+    return `${d.toLocaleString("default", {
+      month: "long",
+    })} ${d.getDate()}th, ${d.getFullYear()}`;
   };
 
   const handleStatusUpdate = (value: string, leadId: string) => {
@@ -87,7 +108,7 @@ const LeadCard = ({
           height="45"
           className="w-auto h-[35px] object-contain mr-5"
         />
-        <div className="min-w-[200px] max-w-[200px] flex flex-col items-start">
+        <div className="min-w-[250px] max-w-[250px] flex flex-col items-start">
           <h2 className="text-xl">{selectedLead.fullName}</h2>
           <p className="text-sm">{selectedLead.company}</p>
           <div className="mt-4 flex items-center justify-center gap-3">
@@ -100,10 +121,18 @@ const LeadCard = ({
               >
                 {selectedLead.status}
               </Badge>
-            </span>{" "}
+            </span>
+          </div>
+          <div className="mt-2 flex items-center justify-center gap-3">
+            <span className="text-sm">Followup Date:</span>
+            <span className="font-bold flex justify-center items-center">
+              <Badge className={`w-fit text-slate-200 hover:text-slate-300`}>
+                {formatDate(selectedLead.followUpDate)}
+              </Badge>
+            </span>
           </div>
         </div>
-        <div className="ml-10 flex flex-col gap-3 self-center">
+        <div className="ml-3 flex flex-col gap-3 self-center">
           <div className="flex gap-3">
             <SelectLeadStatus status={status} setStatus={setStatus} />
             {/* if select value changes display update button */}
@@ -133,6 +162,12 @@ const LeadCard = ({
             name={selectedLead.fullName}
             setFilteredLeads={setFilteredLeads}
             filteredLeads={filteredLeads}
+            clientLeads={clientLeads}
+            setClientLeads={setClientLeads}
+            totalLeads={totalLeads}
+            setTotalLeads={setTotalLeads}
+            totalCalls={totalCalls}
+            setTotalCalls={setTotalCalls}
           />
         </div>
       </div>

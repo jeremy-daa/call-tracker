@@ -64,12 +64,24 @@ export async function DELETE(
     try {
       await dbConnect();
       const lead = await Lead.findByIdAndDelete(id);
+
       if (!lead) {
         return NextResponse.json(
           { message: "Lead not found" },
           { status: 404 }
         );
       }
+
+      const res = await Call.deleteMany({ lead: id });
+
+      const calls = await Call.find();
+      const totalCalls = calls.filter(
+        (call) => call.lead.toString() !== lead?._id.toString()
+      ).length;
+      if (!lead) {
+        return NextResponse.json(totalCalls, { status: 404 });
+      }
+
       return NextResponse.json(
         { message: "Lead deleted successfully" },
         { status: 200 }

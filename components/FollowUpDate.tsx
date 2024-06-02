@@ -38,7 +38,10 @@ export function FollowUpDate({
         <Calendar
           mode="single"
           selected={date}
-          onSelect={(date: Date | undefined) => setDate(date as Date)}
+          onSelect={(date: Date | undefined) => {
+            setDate(date as Date);
+            console.log(date);
+          }}
           initialFocus
         />
       </PopoverContent>
