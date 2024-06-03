@@ -159,7 +159,6 @@ function ProfileForm({
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
-            required
             type="email"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
