@@ -92,7 +92,13 @@ export function DrawerDemo({
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
                     <MdEmail className="mr-2" /> Email:
                   </Badge>
-                  <Link href={`mailto:${lead.email}`}>{lead?.email}</Link>
+                  <Link
+                    href={`${lead.email === null ? "" : "mailto:"}${
+                      lead.email
+                    }`}
+                  >
+                    {`${lead.email === null ? "N/A" : lead.email}`}
+                  </Link>
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">

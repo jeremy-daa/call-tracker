@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   interface RequestBody {
     name?: string;
-    email?: string;
+    email?: string | null;
     phone: string;
     company?: string;
     industry: string;
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   } else {
-    const { name, email, phone, company, industry, status, notes } = body;
+    let { name, email, phone, company, industry, status, notes } = body;
 
     if (!phone || !industry || !status) {
       return NextResponse.json(
@@ -73,12 +73,16 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
+    if (email === "") {
+      email = null;
+    }
 
     try {
       await dbConnect();
+
       const newLead = new Lead({
         fullName: name || "No Name",
-        email: email || "No Email",
+        email: email || undefined,
         phone,
         company: company || "No Company",
         industry,

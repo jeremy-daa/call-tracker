@@ -14,6 +14,7 @@ const LeadSchema = new Schema(
       trim: true,
       lowercase: true,
       match: [/\S+@\S+\.\S+/, "is invalid"],
+      default: null,
     },
     phone: {
       type: String,
