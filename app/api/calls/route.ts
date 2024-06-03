@@ -3,6 +3,7 @@ import dbConnect from "@/utils/dbConnect";
 import Call from "@/models/Call";
 import { getAuthSession } from "@/lib/authOptions";
 import Lead from "@/models/Lead";
+import { headers } from "next/headers";
 
 export async function POST(request: Request) {
   enum statusEnum {
@@ -117,6 +118,22 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const session = await getAuthSession();
+  const headersList = headers();
+  const referer = headersList.get("key");
+
+  if (referer === process.env.NEXTAUTH_SECRET) {
+    try {
+      await dbConnect();
+      const calls = await Call.find();
+
+      return NextResponse.json({ calls }, { status: 200 });
+    } catch (e: any) {
+      return NextResponse.json(
+        { message: `Internal Server Err` },
+        { status: 500 }
+      );
+    }
+  }
 
   if (!session) {
     return NextResponse.json(

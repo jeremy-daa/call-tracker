@@ -6,23 +6,49 @@ import axios from "axios";
 import dbConnect from "@/utils/dbConnect";
 import Lead from "@/models/Lead";
 import Call from "@/models/Call";
+const fetchLeads = async () => {
+  const leadsFetch = await fetch(`${process.env.NEXTAUTH_URL}/api/leads`, {
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Aequseted-With": "XMLHttpRequest",
+      key: `${process.env.NEXTAUTH_SECRET}`,
+    },
+  });
+
+  return leadsFetch.json();
+};
+const fetchCalls = async () => {
+  const callsFetch = await fetch(`${process.env.NEXTAUTH_URL}/api/calls`, {
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Aequseted-With": "XMLHttpRequest",
+      key: `${process.env.NEXTAUTH_SECRET}`,
+    },
+  });
+  return callsFetch.json();
+};
 
 export default async function Home() {
-  await dbConnect();
-  const leadsFetch = await Lead.find();
-  const callsFetch = await Call.find();
-  const leads = JSON.parse(JSON.stringify(leadsFetch));
-  const calls = JSON.parse(JSON.stringify(callsFetch));
-  leads.forEach((lead: any) => {
-    const latestCall = calls
-      .filter((call: any) => call.lead.toString() === lead._id.toString())
-      .sort((a: any, b: any) => b.date - a.date)[0];
-    if (!latestCall) {
-      lead.followUpDate = null;
-      return;
-    }
-    lead.followUpDate = latestCall?.followUpDate;
-  });
+  const leads = await fetchLeads();
+  const calls = await fetchCalls();
+  console.log("Leads:");
+  console.log(leads);
+  console.log("Calls");
+  console.log(calls);
+  // leads.forEach((lead: any) => {
+  //   const latestCall = calls
+  //     .filter((call: any) => call.lead.toString() === lead._id.toString())
+  //     .sort((a: any, b: any) => b.date - a.date)[0];
+  //   if (!latestCall) {
+  //     lead.followUpDate = null;
+  //     return;
+  //   }
+  //   lead.followUpDate = latestCall?.followUpDate;
+  // });
 
   return (
     <main className="min-h-[200vh] py-8 sm:px-24 md:px-16 px-12 mb-16">
@@ -47,7 +73,7 @@ export default async function Home() {
       <h1 className="text-center md:text-5xl tracking-wide mt-16 capitalize text-3xl">
         Welcome Back!
       </h1>
-      <Dashboard leads={leads} calls={calls.length} />
+      <Dashboard leads={leads} calls={calls.calls.length} />
     </main>
   );
 }
