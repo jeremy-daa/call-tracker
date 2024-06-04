@@ -40,7 +40,7 @@ export function IndustrySelect({
           aria-expanded={open}
           className="w-full justify-between hover:bg-slate-700"
         >
-          {value
+          {value !== ""
             ? industries.find((industry) => industry.name === value)?.name
             : "Select Industry..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

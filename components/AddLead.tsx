@@ -76,7 +76,7 @@ function ProfileForm({
   filterTerm: string;
 }) {
   const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
+  const [email, setEmail] = React.useState<undefined | string>(undefined);
   const [phone, setPhone] = React.useState("");
   const [company, setCompany] = React.useState("");
   const [industry, setIndustry] = React.useState("");
@@ -115,7 +115,7 @@ function ProfileForm({
       })
       .then((res) => {
         setName("");
-        setEmail("");
+        setEmail(undefined);
         setPhone("");
         setCompany("");
         setIndustry("");
