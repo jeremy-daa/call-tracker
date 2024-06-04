@@ -10,7 +10,6 @@ const LeadSchema = new Schema(
     },
     email: {
       type: String,
-      sparse: true,
     },
 
     phone: {
