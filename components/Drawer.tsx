@@ -93,11 +93,13 @@ export function DrawerDemo({
                     <MdEmail className="mr-2" /> Email:
                   </Badge>
                   <Link
-                    href={`${lead.email === null ? "" : "mailto:"}${
-                      lead.email
-                    }`}
+                    href={`${lead.email === "" ? "" : "mailto:"}${lead.email}`}
                   >
-                    {`${lead.email === null ? "N/A" : lead.email}`}
+                    {`${
+                      lead.email === null || lead.email === ""
+                        ? "N/A"
+                        : lead.email
+                    }`}
                   </Link>
                 </div>
                 <div className="flex items-center gap-5">

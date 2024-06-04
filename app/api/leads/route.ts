@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   interface RequestBody {
     name?: string;
-    email?: string | null;
+    email: string;
     phone: string;
     company?: string;
     industry: string;
@@ -67,14 +67,11 @@ export async function POST(request: Request) {
     }
 
     const leadEmailExists = await Lead.findOne({ email });
-    if (leadEmailExists) {
+    if (leadEmailExists && email !== "" && email !== null) {
       return NextResponse.json(
         { message: "Lead with this email already exists" },
         { status: 409 }
       );
-    }
-    if (email === "") {
-      email = null;
     }
 
     try {
@@ -82,9 +79,9 @@ export async function POST(request: Request) {
 
       const newLead = new Lead({
         fullName: name || "No Name",
-        email: email || undefined,
+        email: email,
         phone,
-        company: company || "No Company",
+        company: company || "No Company name",
         industry,
         status,
         notes: notes || "No Notes",

@@ -35,20 +35,16 @@ const fetchCalls = async () => {
 export default async function Home() {
   const leads = await fetchLeads();
   const calls = await fetchCalls();
-  console.log("Leads:");
-  console.log(leads);
-  console.log("Calls");
-  console.log(calls);
-  // leads.forEach((lead: any) => {
-  //   const latestCall = calls
-  //     .filter((call: any) => call.lead.toString() === lead._id.toString())
-  //     .sort((a: any, b: any) => b.date - a.date)[0];
-  //   if (!latestCall) {
-  //     lead.followUpDate = null;
-  //     return;
-  //   }
-  //   lead.followUpDate = latestCall?.followUpDate;
-  // });
+  leads.forEach((lead: any) => {
+    const latestCall = calls.calls
+      .filter((call: any) => call.lead.toString() === lead._id.toString())
+      .sort((a: any, b: any) => b.date - a.date)[0];
+    if (!latestCall) {
+      lead.followUpDate = null;
+      return;
+    }
+    lead.followUpDate = latestCall?.followUpDate;
+  });
 
   return (
     <main className="min-h-[200vh] py-8 sm:px-24 md:px-16 px-12 mb-16">

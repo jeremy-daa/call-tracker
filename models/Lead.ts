@@ -10,12 +10,9 @@ const LeadSchema = new Schema(
     },
     email: {
       type: String,
-      unique: true,
-      trim: true,
-      lowercase: true,
-      match: [/\S+@\S+\.\S+/, "is invalid"],
-      default: null,
+      sparse: true,
     },
+
     phone: {
       type: String,
       unique: true,
