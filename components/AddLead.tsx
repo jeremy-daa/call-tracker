@@ -16,6 +16,7 @@ import { IndustrySelect } from "./IndustrySelect";
 import { StatusSelect } from "./StatusSelect";
 import { toast } from "./ui/use-toast";
 import axios from "axios";
+import { set } from "mongoose";
 
 export function AddLead({
   open,
@@ -52,6 +53,7 @@ export function AddLead({
           totalLeads={totalLeads}
           setFilteredLeads={setFilteredLeads}
           filterTerm={filterTerm}
+          setOpen={setOpen}
         />
       </DialogContent>
     </Dialog>
@@ -66,6 +68,7 @@ function ProfileForm({
   totalLeads,
   setFilteredLeads,
   filterTerm,
+  setOpen,
 }: {
   className?: string;
   industries: any[];
@@ -74,6 +77,7 @@ function ProfileForm({
   totalLeads: number;
   setFilteredLeads: (leads: any[]) => void;
   filterTerm: string;
+  setOpen: (open: boolean) => void;
 }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState<undefined | string>(undefined);
@@ -121,6 +125,7 @@ function ProfileForm({
         setIndustry("");
         setStatus("");
         setNotes("");
+        setOpen(false);
         setLoading(false);
         fetchLeads();
         setClientLeads(res.data);
