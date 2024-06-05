@@ -29,22 +29,13 @@ const fetchCalls = async () => {
       key: `${process.env.NEXTAUTH_SECRET}`,
     },
   });
+
   return callsFetch.json();
 };
 
 export default async function Home() {
   const leads = await fetchLeads();
   const calls = await fetchCalls();
-  leads.forEach((lead: any) => {
-    const latestCall = calls.calls
-      .filter((call: any) => call.lead.toString() === lead._id.toString())
-      .sort((a: any, b: any) => b.date - a.date)[0];
-    if (!latestCall) {
-      lead.followUpDate = null;
-      return;
-    }
-    lead.followUpDate = latestCall?.followUpDate;
-  });
 
   return (
     <main className="min-h-[200vh] py-8 sm:px-24 md:px-16 px-12 mb-16">

@@ -20,7 +20,6 @@ export function DeleteDialogue({
   filteredLeads,
   clientLeads,
   setClientLeads,
-  totalCalls,
   totalLeads,
   setTotalLeads,
   setTotalCalls,
@@ -31,7 +30,6 @@ export function DeleteDialogue({
   filteredLeads: any[];
   clientLeads: any[];
   setClientLeads: (leads: any[]) => void;
-  totalCalls: number;
   totalLeads: number;
   setTotalLeads: (value: number) => void;
   setTotalCalls: (value: number) => void;
@@ -48,8 +46,14 @@ export function DeleteDialogue({
         setFilteredLeads(filteredLeads.filter((lead) => lead._id !== leadId));
         setClientLeads(clientLeads.filter((lead) => lead._id !== leadId));
         setTotalLeads(totalLeads - 1);
-        setTotalCalls(res.data.totalCalls);
-        console.log(res.data.totalCalls);
+        const totalCalls = async () => {
+          await axios.get("/api/calls").then((res) => {
+            const total = res.data.calls.length || 0;
+            setTotalCalls(total);
+          });
+        };
+
+        totalCalls();
       })
       .catch((err) => {
         toast({

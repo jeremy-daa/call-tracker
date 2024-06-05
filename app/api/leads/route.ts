@@ -4,6 +4,7 @@ import Lead from "@/models/Lead";
 import dbConnect from "@/utils/dbConnect";
 import { headers } from "next/headers";
 import Call from "@/models/Call";
+import { FollowUpDate } from "@/components/FollowUpDate";
 
 export async function POST(request: Request) {
   enum statusEnum {
@@ -26,7 +27,10 @@ export async function POST(request: Request) {
     company?: string;
     industry: string;
     status: statusEnum;
+    followUpDate?: Date | null;
     notes?: string;
+    website?: string;
+    websiteStatus?: string;
   }
   const body: RequestBody = await request.json();
   const session = await getAuthSession();
@@ -37,7 +41,17 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   } else {
-    let { name, email, phone, company, industry, status, notes } = body;
+    let {
+      name,
+      email,
+      phone,
+      company,
+      industry,
+      status,
+      notes,
+      website,
+      websiteStatus,
+    } = body;
 
     if (!phone || !industry || !status) {
       return NextResponse.json(
@@ -81,6 +95,7 @@ export async function POST(request: Request) {
 
     try {
       await dbConnect();
+      let followUpDate = undefined;
 
       const newLead = new Lead({
         fullName: name || "No Name",
@@ -89,6 +104,9 @@ export async function POST(request: Request) {
         company: company || "No Company name",
         industry,
         status,
+        website: website || "No Website",
+        websiteStatus: websiteStatus || "No Website Status",
+        followUpDate,
         notes: notes || "No Notes",
       });
       const res = await newLead.save();
@@ -116,21 +134,13 @@ export async function GET(request: Request) {
     try {
       await dbConnect();
       const leads = await Lead.find();
-      const calls = await Call.find();
-      leads.forEach((lead) => {
-        const latestCall = calls
-          .filter((call) => call.lead.toString() === lead._id.toString())
-          .sort((a, b) => b.date - a.date)[0];
-        if (!latestCall) {
-          lead.followUpDate = null;
-          return;
-        }
-        lead.followUpDate = latestCall?.followUpDate;
-      });
 
       return NextResponse.json(leads, { status: 200 });
     } catch (e: any) {
-      return NextResponse.json({ message: `Invalid key` }, { status: 500 });
+      return NextResponse.json(
+        { message: `Internal Server Err: ${e.message}` },
+        { status: 500 }
+      );
     }
   }
   if (!session) {
@@ -142,6 +152,18 @@ export async function GET(request: Request) {
   try {
     await dbConnect();
     const leads = await Lead.find();
+    const calls = await Call.find();
+
+    leads.forEach((lead) => {
+      const latestCall = calls
+        .filter((call) => call.lead.toString() === lead._id.toString())
+        .sort((a, b) => b.date - a.date)[0];
+      if (!latestCall) {
+        lead.followUpDate = null;
+        return;
+      }
+      lead.followUpDate = latestCall?.followUpDate;
+    });
     return NextResponse.json(leads, { status: 200 });
   } catch (e: any) {
     return NextResponse.json(

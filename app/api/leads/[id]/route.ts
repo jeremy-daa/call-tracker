@@ -29,19 +29,19 @@ export async function GET(
     });
 
     // From the lead object, get the latest call object with matching lead id and set lead.followUpDate to latest call.followUpDate
-    const latestCall = calls
-      .filter((call) => call.lead.toString() === lead._id.toString())
-      .sort((a, b) => b.date - a.date)[0];
 
-    if (!latestCall) {
-      lead.followUpDate = null;
-    } else {
-      lead.followUpDate = latestCall?.followUpDate;
-    }
+    // const latestCall: any = calls
+    //   .filter((call) => call.lead.toString() === lead._id.toString())
+    //   .sort((a, b) => b.date - a.date)[0];
+
+    // if (!latestCall) {
+    //   lead.followUpDate = null;
+    // } else {
+    //   lead.followUpDate = latestCall?.followUpDate;
+    // }
 
     return NextResponse.json({ lead, calls }, { status: 200 });
   } catch (e: any) {
-    console.log(e.message);
     return NextResponse.json(
       { message: `Internal Server Err` },
       { status: 500 }

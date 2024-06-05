@@ -11,6 +11,11 @@ const LeadSchema = new Schema(
     email: {
       type: String,
     },
+    followUpDate: {
+      type: Date || undefined,
+
+      trim: true,
+    },
 
     phone: {
       type: String,
@@ -24,11 +29,18 @@ const LeadSchema = new Schema(
       default: "No Company Name",
       trim: true,
     },
+    website: {
+      type: String,
+      trim: true,
+    },
     industry: {
       type: String,
       required: true,
       ref: "industries",
       trim: true,
+    },
+    websiteStatus: {
+      type: String,
     },
     status: {
       type: String,

@@ -87,6 +87,7 @@ function ProfileForm({
   const [status, setStatus] = React.useState("");
   const [notes, setNotes] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const followUpDate = undefined;
 
   const handleAddLead = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,6 +130,7 @@ function ProfileForm({
         setLoading(false);
         fetchLeads();
         setClientLeads(res.data);
+
         const newfilteredLeads = res.data.filter((lead: any) => {
           if (filterTerm === "") {
             return lead;

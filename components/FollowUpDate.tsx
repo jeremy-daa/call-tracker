@@ -40,7 +40,6 @@ export function FollowUpDate({
           selected={date}
           onSelect={(date: Date | undefined) => {
             setDate(date as Date);
-            console.log(date);
           }}
           initialFocus
         />

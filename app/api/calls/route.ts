@@ -95,14 +95,28 @@ export async function POST(request: Request) {
         callNotes,
         followUpDate,
       });
+      if (followUpDate) {
+        const resFollowup = await Lead.findByIdAndUpdate(leadId, {
+          $set: { followUpDate: followUpDate },
+        });
+      }
       const res = await newCall.save();
       if (res) {
         const calls = await Call.find();
         const totalCalls = calls.length;
+        // find by phone and update the follow up date of the lead
+        if (res) {
+          return NextResponse.json(
+            { message: "Call added successfully", totalCalls },
+            { status: 200 }
+          );
+        }
 
         return NextResponse.json(
-          { message: "Call added successfully", totalCalls },
-          { status: 200 }
+          { message: "Error updating lead" },
+          {
+            status: 500,
+          }
         );
       }
     } catch (e: any) {

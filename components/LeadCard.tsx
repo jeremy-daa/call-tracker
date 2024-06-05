@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { MdAddCall } from "react-icons/md";
 import { Button } from "./ui/button";
@@ -23,7 +23,6 @@ const LeadCard = ({
   filteredLeads,
   clientLeads,
   setClientLeads,
-  totalCalls,
   totalLeads,
   setTotalCalls,
   setTotalLeads,
@@ -39,13 +38,12 @@ const LeadCard = ({
   filteredLeads: any[];
   clientLeads: any[];
   setClientLeads: (value: any[]) => void;
-  totalCalls: number;
   totalLeads: number;
   setTotalCalls: (value: number) => void;
   setTotalLeads: (value: number) => void;
 }) => {
   const [status, setStatus] = React.useState("");
-  const [selectedLead, setSelectedLead] = React.useState(lead);
+  const [selectedLead, setSelectedLead] = React.useState<any>(lead);
   const fetchLead = async () => {
     setCallsLoading(true);
     setLeadInfo(lead);
@@ -125,6 +123,7 @@ const LeadCard = ({
           </div>
           <div className="mt-2 flex items-center justify-center gap-3">
             <span className="text-sm">Followup Date:</span>
+
             <span className="font-bold flex justify-center items-center">
               <Badge className={`w-fit text-slate-200 hover:text-slate-300`}>
                 {formatDate(selectedLead.followUpDate)}
@@ -166,7 +165,6 @@ const LeadCard = ({
             setClientLeads={setClientLeads}
             totalLeads={totalLeads}
             setTotalLeads={setTotalLeads}
-            totalCalls={totalCalls}
             setTotalCalls={setTotalCalls}
           />
         </div>

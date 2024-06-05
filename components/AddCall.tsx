@@ -8,12 +8,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IndustrySelect } from "./IndustrySelect";
-import { StatusSelect } from "./StatusSelect";
 import { toast } from "./ui/use-toast";
 import { FollowUpDate } from "./FollowUpDate";
 import { CallStatus } from "./CallStatus";
@@ -23,14 +20,20 @@ export function AddCall({
   phone,
   open,
   setOpen,
-  totalCalls,
   setTotalCalls,
+  setClientLeads,
+  clientLeads,
+  setFilteredLeads,
+  filteredLeads,
 }: {
   phone?: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-  totalCalls: number;
   setTotalCalls: (calls: number) => void;
+  setClientLeads: (leads: any[]) => void;
+  clientLeads: any[];
+  setFilteredLeads: (leads: any[]) => void;
+  filteredLeads: any[];
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -43,8 +46,12 @@ export function AddCall({
         </DialogHeader>
         <CallForm
           phoneN={phone}
-          totalCalls={totalCalls}
           setTotalCalls={setTotalCalls}
+          setClientLeads={setClientLeads}
+          clientLeads={clientLeads}
+          setFilteredLeads={setFilteredLeads}
+          filteredLeads={filteredLeads}
+          setOpen={setOpen}
         />
       </DialogContent>
     </Dialog>
@@ -54,13 +61,21 @@ export function AddCall({
 function CallForm({
   className,
   phoneN,
-  totalCalls,
   setTotalCalls,
+  setClientLeads,
+  clientLeads,
+  setFilteredLeads,
+  filteredLeads,
+  setOpen,
 }: {
   className?: string;
   phoneN?: string;
-  totalCalls: number;
   setTotalCalls: (calls: number) => void;
+  setClientLeads: (leads: any[]) => void;
+  clientLeads: any[];
+  setFilteredLeads: (leads: any[]) => void;
+  filteredLeads: any[];
+  setOpen: (open: boolean) => void;
 }) {
   const [phone, setPhone] = React.useState(phoneN ? phoneN : "");
   const [duration, setDuration] = React.useState("");
@@ -87,11 +102,7 @@ function CallForm({
       });
       return;
     }
-    const fetchCalls = async () => {
-      await axios.get("/api/calls").then((res) => {
-        setTotalCalls(totalCalls + 1);
-      });
-    };
+
     await axios
       .post("/api/calls", {
         phone,
@@ -106,18 +117,46 @@ function CallForm({
           if (!phoneN) {
             setPhone("");
           }
+          setOpen(false);
           setDuration("");
           setOutcome("");
-          setFollowup(undefined);
           setNotes("");
-          fetchCalls();
+
+          if (followup) {
+            const updatedLeads = clientLeads.map((lead) => {
+              if (lead.phone === phone) {
+                lead.followUpDate = followup;
+                return lead;
+              }
+              return lead;
+            });
+            setClientLeads(updatedLeads);
+
+            const updatedFilteredLeads = filteredLeads.map((lead) => {
+              if (lead.phone === phone) {
+                return { ...lead, followUpDate: followup };
+              }
+              return lead;
+            });
+            setFilteredLeads(updatedFilteredLeads);
+            console.log(filteredLeads);
+            setFollowup(undefined);
+          }
+
+          const totalCalls = async () => {
+            await axios.get("/api/calls").then((res) => {
+              setTotalCalls(res.data.calls.length);
+            });
+          };
+
+          totalCalls();
           setLoading(false);
           setTotalCalls(res.data.totalCalls);
         }
       })
       .catch((e) => {
         setLoading(false);
-        toast({ description: e.response.data.message });
+        toast({ description: "Error adding call" });
       });
   };
   return (

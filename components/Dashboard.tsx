@@ -27,6 +27,7 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
   const [callsLoading, setCallsLoading] = useState(false);
   const [industries, setIndustries] = useState<any[]>([]);
   const [filterTerm, setFilterTerm] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [totalCalls, setTotalCalls] = useState(calls || 0);
   const [totalLeads, setTotalLeads] = useState(leads.length);
@@ -85,7 +86,10 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         open={openCall}
         setOpen={setOpenCall}
         setTotalCalls={setTotalCalls}
-        totalCalls={totalCalls}
+        setClientLeads={setClientLeads}
+        setFilteredLeads={setFilteredLeads}
+        clientLeads={clientLeads}
+        filteredLeads={filteredLeads}
       />
       <AddIndustry
         open={openIndustry}
@@ -186,37 +190,35 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
           <div className="px-4 w-full pb-5 [&:not(:last-child)]:border-b-2 border-b-slate-300 mb-5 ">
             <div className="flex flex-col gap-6 w-full py-4 items-center">
               {/* Lead Card */}
-              {
-                // If there are no leads, display a message
-                filteredLeads.length === 0 ? (
-                  <h1 className="text-xl text-slate-200">
-                    No leads found. Clear Filter and Serach or Add a new lead.
-                  </h1>
-                ) : (
-                  <>
-                    {filteredLeads.map((lead) => (
-                      <LeadCard
-                        key={lead._id}
-                        setOpenDrawer={setOpenDrawer}
-                        setOpenCall={setOpenCall}
-                        setPhone={setPhone}
-                        lead={lead}
-                        setLeadInfo={setLeadInfo}
-                        setCallsInfo={setCallsInfo}
-                        setCallsLoading={setCallsLoading}
-                        setFilteredLeads={setFilteredLeads}
-                        filteredLeads={filteredLeads}
-                        clientLeads={clientLeads}
-                        setClientLeads={setClientLeads}
-                        setTotalCalls={setTotalLeads}
-                        totalCalls={totalLeads}
-                        totalLeads={totalLeads}
-                        setTotalLeads={setTotalLeads}
-                      />
-                    ))}
-                  </>
-                )
-              }
+              {filteredLeads &&
+              // If there are no leads, display a message
+              filteredLeads.length === 0 ? (
+                <h1 className="text-xl text-slate-200">
+                  No leads found. Clear Filter and Serach or Add a new lead.
+                </h1>
+              ) : (
+                <>
+                  {filteredLeads.map((lead) => (
+                    <LeadCard
+                      key={lead._id}
+                      setOpenDrawer={setOpenDrawer}
+                      setOpenCall={setOpenCall}
+                      setPhone={setPhone}
+                      lead={lead}
+                      setLeadInfo={setLeadInfo}
+                      setCallsInfo={setCallsInfo}
+                      setCallsLoading={setCallsLoading}
+                      setFilteredLeads={setFilteredLeads}
+                      filteredLeads={filteredLeads}
+                      clientLeads={clientLeads}
+                      setClientLeads={setClientLeads}
+                      setTotalCalls={setTotalCalls}
+                      totalLeads={totalLeads}
+                      setTotalLeads={setTotalLeads}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           </div>
         </div>
