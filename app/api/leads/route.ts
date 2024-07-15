@@ -4,7 +4,6 @@ import Lead from "@/models/Lead";
 import dbConnect from "@/utils/dbConnect";
 import { headers } from "next/headers";
 import Call from "@/models/Call";
-import { FollowUpDate } from "@/components/FollowUpDate";
 
 export async function POST(request: Request) {
   enum statusEnum {
@@ -130,11 +129,24 @@ export async function GET(request: Request) {
   const headersList = headers();
   const referer = headersList.get("key");
 
-  if (referer === process.env.NEXTAUTH_SECRET) {
+  if (referer === process.env.REFERER) {
     try {
       await dbConnect();
       const leads = await Lead.find();
+      const calls = await Call.find();
 
+      leads.forEach((lead) => {
+        const latestCall = calls
+          .filter((call) => call.lead.toString() === lead._id.toString())
+          .sort((a, b) => b.date - a.date)[0];
+        if (!latestCall) {
+          lead.followUpDate = null;
+          return;
+        }
+        lead.followUpDate = latestCall?.followUpDate;
+      });
+
+      leads.reverse();
       return NextResponse.json(leads, { status: 200 });
     } catch (e: any) {
       return NextResponse.json(
@@ -164,6 +176,8 @@ export async function GET(request: Request) {
       }
       lead.followUpDate = latestCall?.followUpDate;
     });
+
+    leads.reverse();
     return NextResponse.json(leads, { status: 200 });
   } catch (e: any) {
     return NextResponse.json(

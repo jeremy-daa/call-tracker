@@ -19,18 +19,31 @@ import {
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
 
-export function IndustrySelect({
-  industry,
-  setIndustry,
-  industries,
+export function Sort({
+  filteredLeads,
+  setFilteredLeads,
 }: {
-  industry: string;
-  setIndustry: (industry: any) => void;
-  industries: any[];
+  filteredLeads: any[];
+  setFilteredLeads: (leads: any[]) => void;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(industry);
-
+  const [value, setValue] = React.useState("");
+  const sortOptions = ["Follow-up date", "Status"];
+  const handleSort = (value: string) => {
+    if (value === "Follow-up date") {
+      setFilteredLeads(
+        [...filteredLeads].sort(
+          (a, b) =>
+            new Date(a.follow_up_date).getTime() -
+            new Date(b.follow_up_date).getTime()
+        )
+      );
+    } else if (value === "Status") {
+      setFilteredLeads(
+        [...filteredLeads].sort((a, b) => a.status.localeCompare(b.status))
+      );
+    }
+  };
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -38,38 +51,36 @@ export function IndustrySelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between hover:bg-slate-700"
+          className="w-[200px] justify-between hover:bg-slate-700"
         >
-          {value
-            ? industries.find((industry) => industry.name === value)?.name
-            : "Select Industry..."}
+          {value ? sortOptions.find((opt) => opt === value) : "Sort by..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-slate-950">
+      <PopoverContent className="w-[200px] p-0 bg-slate-950">
         <Command>
           <CommandList>
-            <CommandInput placeholder="Search industry..." />
-            <CommandEmpty>No industry found.</CommandEmpty>
+            <CommandInput placeholder="Sort by..." />
+            <CommandEmpty>No Sorting Option found.</CommandEmpty>
             <CommandGroup>
-              {industries.map((industry) => (
+              {sortOptions.map((option, index) => (
                 <CommandItem
-                  key={industry.name}
-                  value={industry.name}
+                  key={index}
+                  value={option}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
+                    handleSort(currentValue === value ? "" : currentValue);
                     setOpen(false);
-                    setIndustry(currentValue);
                   }}
                   className="hover:bg-slate-700"
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === industry.name ? "opacity-100" : "opacity-0"
+                      value === option ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {industry.name}
+                  {option}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -79,37 +90,3 @@ export function IndustrySelect({
     </Popover>
   );
 }
-
-export default IndustrySelect;
-
-// export function IndustrySelect({
-//   industry,
-//   setIndustry,
-//   industries,
-// }: {
-//   industry: string;
-//   setIndustry: (industry: any) => void;
-//   industries: any[];
-// }) {
-//   return (
-//     <Select
-//       value={industry}
-//       onValueChange={(value) => {
-//         setIndustry(value);
-//       }}
-//     >
-//       <SelectTrigger>
-//         <SelectValue placeholder="Select industry" />
-//       </SelectTrigger>
-//       <SelectContent className="bg-slate-800">
-//         <SelectGroup className="items-start">
-//           {industries.map((industry, index) => (
-//             <SelectItem key={index} value={industry.name}>
-//               {industry.name}
-//             </SelectItem>
-//           ))}
-//         </SelectGroup>
-//       </SelectContent>
-//     </Select>
-//   );
-// }

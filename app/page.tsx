@@ -2,10 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import NavButton from "@/components/NavButton";
 import Dashboard from "@/components/Dashboard";
-import axios from "axios";
-import dbConnect from "@/utils/dbConnect";
-import Lead from "@/models/Lead";
-import Call from "@/models/Call";
 const fetchLeads = async () => {
   const leadsFetch = await fetch(`${process.env.NEXTAUTH_URL}/api/leads`, {
     cache: "no-store",
@@ -13,7 +9,7 @@ const fetchLeads = async () => {
       "Content-Type": "application/json",
       Accept: "application/json",
       "X-Aequseted-With": "XMLHttpRequest",
-      key: `${process.env.NEXTAUTH_SECRET}`,
+      key: `${process.env.REFERER}`,
     },
   });
 
@@ -26,7 +22,7 @@ const fetchCalls = async () => {
       "Content-Type": "application/json",
       Accept: "application/json",
       "X-Aequseted-With": "XMLHttpRequest",
-      key: `${process.env.NEXTAUTH_SECRET}`,
+      key: `${process.env.REFERER}`,
     },
   });
 

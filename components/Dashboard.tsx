@@ -13,6 +13,7 @@ import { DrawerDemo } from "@/components/Drawer";
 import { AddLead } from "@/components/AddLead";
 import { AddCall } from "@/components/AddCall";
 import { AddIndustry } from "@/components/AddIndustry";
+import { Sort } from "./Sort";
 
 const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -90,6 +91,7 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
         setFilteredLeads={setFilteredLeads}
         clientLeads={clientLeads}
         filteredLeads={filteredLeads}
+        totalCalls={totalCalls}
       />
       <AddIndustry
         open={openIndustry}
@@ -173,6 +175,11 @@ const Dashboard = ({ leads, calls }: { leads: any[]; calls?: number }) => {
             setFilteredLeads={setFilteredLeads}
             clientLeads={clientLeads}
             setFilterTerm={setFilterTerm}
+          />
+
+          <Sort
+            filteredLeads={filteredLeads}
+            setFilteredLeads={setFilteredLeads}
           />
           {/* <FollowupDrawer filteredLeads={filteredLeads} /> */}
 

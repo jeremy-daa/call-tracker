@@ -135,7 +135,7 @@ export async function GET(request: Request) {
   const headersList = headers();
   const referer = headersList.get("key");
 
-  if (referer === process.env.NEXTAUTH_SECRET) {
+  if (referer === process.env.REFERER) {
     try {
       await dbConnect();
       const calls = await Call.find();

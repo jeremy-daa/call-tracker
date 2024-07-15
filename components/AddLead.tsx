@@ -86,7 +86,10 @@ function ProfileForm({
   const [industry, setIndustry] = React.useState("");
   const [status, setStatus] = React.useState("");
   const [notes, setNotes] = React.useState("");
+  const [websiteStatus, setWebsiteStatus] = React.useState("");
+  const [website, setWebsite] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+
   const followUpDate = undefined;
 
   const handleAddLead = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +118,8 @@ function ProfileForm({
         phone,
         company,
         industry,
+        website,
+        websiteStatus,
         status,
         notes,
       })
@@ -126,6 +131,8 @@ function ProfileForm({
         setIndustry("");
         setStatus("");
         setNotes("");
+        setWebsite("");
+        setWebsiteStatus("");
         setOpen(false);
         setLoading(false);
         fetchLeads();
@@ -204,6 +211,26 @@ function ProfileForm({
         <div className="grid gap-2 w-full">
           <Label htmlFor="status">Status</Label>
           <StatusSelect status={status} setStatus={setStatus} />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <div className="grid gap-2 w-full">
+          <Label htmlFor="webiste">Website</Label>
+          <Input
+            id="website"
+            required
+            onChange={(e) => setWebsite(e.target.value)}
+            value={website}
+          />
+        </div>
+        <div className="grid gap-2 w-full">
+          <Label htmlFor="websiteStatus">Website Status</Label>
+          <Input
+            id="websiteStatus"
+            required
+            onChange={(e) => setWebsiteStatus(e.target.value)}
+            value={websiteStatus}
+          />
         </div>
       </div>
       <div className="grid gap-2">

@@ -16,7 +16,9 @@ import {
 import { Badge } from "./ui/badge";
 import { MdEmail, MdPhone, MdNotes } from "react-icons/md";
 import { HiMiniBuildingOffice2 } from "react-icons/hi2";
-import axios from "axios";
+import { FaCalendarDays } from "react-icons/fa6";
+import { IoGlobeOutline } from "react-icons/io5";
+import { TbHeartbeat } from "react-icons/tb";
 import Link from "next/link";
 import { toast } from "./ui/use-toast";
 import NoteEdit from "./NoteEdit";
@@ -110,7 +112,7 @@ export function DrawerDemo({
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
-                    <HiMiniBuildingOffice2 className="mr-2" /> Followup Date:
+                    <FaCalendarDays className="mr-2" /> Followup Date:
                   </Badge>
                   {/* Display Followup Date formated */}
                   <span>
@@ -118,6 +120,20 @@ export function DrawerDemo({
                       ? "N/A"
                       : dateFormat(lead?.followUpDate)}
                   </span>
+                </div>
+                <div className="flex items-center gap-5">
+                  <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
+                    <IoGlobeOutline className="mr-2" /> Website:
+                  </Badge>
+                  {/* Display Webiste link */}
+                  <span>{lead?.website}</span>
+                </div>
+                <div className="flex items-center gap-5">
+                  <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
+                    <TbHeartbeat className="mr-2" /> Website Staus:
+                  </Badge>
+                  {/* Display Website Status */}
+                  <span>{lead?.websiteStatus}</span>
                 </div>
                 <div className="flex items-center gap-5">
                   <Badge className="bg-slate-200 text-slate-900 hover:bg-slate-200 hover:text-slate-900">
